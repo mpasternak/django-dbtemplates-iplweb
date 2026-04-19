@@ -1,5 +1,6 @@
-# django-dbtemplates
+# django-dbtemplates-iplweb
 
+[![PyPI](https://img.shields.io/pypi/v/django-dbtemplates-iplweb.svg)](https://pypi.org/project/django-dbtemplates-iplweb/)
 [![Tests](https://github.com/mpasternak/django-dbtemplates-iplweb/actions/workflows/test.yml/badge.svg)](https://github.com/mpasternak/django-dbtemplates-iplweb/actions/workflows/test.yml)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/)
 [![Django Version](https://img.shields.io/badge/django-4.2%20%7C%205.0%20%7C%205.1%20%7C%205.2-092e20.svg)](https://www.djangoproject.com/)
@@ -69,19 +70,23 @@ Matrix derived from `tox.ini` and Django's own Python support matrix.
 ### Using uv (recommended)
 
 ```bash
-uv add django-dbtemplates
+uv add django-dbtemplates-iplweb
 ```
 
 ### Using pip
 
 ```bash
-pip install django-dbtemplates
+pip install django-dbtemplates-iplweb
 ```
 
-### From this fork
+The Python import name stays `dbtemplates`, so no code changes are needed
+when migrating from upstream `django-dbtemplates`:
 
-To install this fork (`mpasternak/django-dbtemplates-iplweb`) directly from
-git instead of the upstream PyPI package:
+```python
+from dbtemplates.models import Template
+```
+
+### From git (latest `master`)
 
 ```bash
 uv add "git+https://github.com/mpasternak/django-dbtemplates-iplweb.git"

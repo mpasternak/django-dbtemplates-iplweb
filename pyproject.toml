@@ -6,9 +6,12 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "django-dbtemplates"
-authors = [{name = "Jannis Leidel", email = "jannis@leidel.info"}]
-description = "Template loader for templates stored in the database"
+name = "django-dbtemplates-iplweb"
+authors = [
+    {name = "Jannis Leidel", email = "jannis@leidel.info"},
+    {name = "Michał Pasternak", email = "michal.dtz@gmail.com"},
+]
+description = "Template loader for templates stored in the database (IPLweb maintenance fork)"
 readme = "README.md"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -43,7 +46,8 @@ docs = [
 [project.urls]
 Documentation = "https://django-dbtemplates.readthedocs.io/"
 Changelog = "https://django-dbtemplates.readthedocs.io/en/latest/changelog.html"
-Source = "https://github.com/jazzband/django-dbtemplates"
+Source = "https://github.com/mpasternak/django-dbtemplates-iplweb"
+Upstream = "https://github.com/jazzband/django-dbtemplates"
 
 [tool.setuptools]
 zip-safe = false
