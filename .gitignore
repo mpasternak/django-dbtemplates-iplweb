@@ -1,6 +1,10 @@
 .*
 !.gitignore
 !.coveragerc
+!.github
+!.pre-commit-config.yaml
+!.readthedocs.yaml
+!.tx
 *.pyc
 .*.swp
 MANIFEST
@@ -12,3 +16,5 @@ docs/_build
 *.egg/
 .coverage
 coverage.xml
+.venv/
+uv.lock

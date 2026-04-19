@@ -19,17 +19,24 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Framework :: Django",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = ["django-appconf >= 0.4"]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "coverage",
+    "django",
+]
+docs = [
+    "django",
+]
 
 [project.urls]
 Documentation = "https://django-dbtemplates.readthedocs.io/"
