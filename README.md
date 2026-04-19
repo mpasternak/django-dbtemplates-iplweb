@@ -86,7 +86,7 @@ when migrating from upstream `django-dbtemplates`:
 from dbtemplates.models import Template
 ```
 
-### From git (latest `master`)
+### From git (latest `main`)
 
 ```bash
 uv add "git+https://github.com/mpasternak/django-dbtemplates-iplweb.git"
