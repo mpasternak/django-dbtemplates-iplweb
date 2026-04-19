@@ -59,6 +59,8 @@ dbtemplates = [
     "static/dbtemplates/js/*.js",
 ]
 
+[tool.setuptools_scm]
+
 [tool.ruff]
 target-version = "py310"
 extend-exclude = ["dbtemplates/migrations"]
