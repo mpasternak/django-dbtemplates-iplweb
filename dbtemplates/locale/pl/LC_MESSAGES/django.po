@@ -1,0 +1,100 @@
+# Polish translation for django-dbtemplates-iplweb.
+# This file is distributed under the same license as the package.
+# Michał Pasternak <michal.dtz@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: django-dbtemplates-iplweb\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-19 16:01-0500\n"
+"PO-Revision-Date: 2026-04-19 16:01-0500\n"
+"Last-Translator: Michał Pasternak <michal.dtz@gmail.com>\n"
+"Language-Team: Polish\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+msgid ""
+"Leaving this empty causes Django to look for a template with the given name "
+"and populate this field with its content."
+msgstr ""
+"Pozostawienie tego pola pustym spowoduje, że Django wyszuka szablon o "
+"podanej nazwie i wypełni to pole jego zawartością."
+
+msgid "Advanced"
+msgstr "Zaawansowane"
+
+msgid "Date/time"
+msgstr "Data/czas"
+
+#, python-format
+msgid "Cache of one template successfully invalidated."
+msgid_plural "Cache of %(count)d templates successfully invalidated."
+msgstr[0] "Pomyślnie unieważniono pamięć podręczną jednego szablonu."
+msgstr[1] "Pomyślnie unieważniono pamięć podręczną %(count)d szablonów."
+msgstr[2] "Pomyślnie unieważniono pamięć podręczną %(count)d szablonów."
+
+msgid "Invalidate cache of selected templates"
+msgstr "Unieważnij pamięć podręczną wybranych szablonów"
+
+#, python-format
+msgid "Cache successfully repopulated with one template."
+msgid_plural "Cache successfully repopulated with %(count)d templates."
+msgstr[0] "Pomyślnie odtworzono pamięć podręczną z jednym szablonem."
+msgstr[1] "Pomyślnie odtworzono pamięć podręczną z %(count)d szablonami."
+msgstr[2] "Pomyślnie odtworzono pamięć podręczną z %(count)d szablonami."
+
+msgid "Repopulate cache with selected templates"
+msgstr "Odtwórz pamięć podręczną z wybranych szablonów"
+
+#, python-format
+msgid "Template syntax check FAILED for %(names)s."
+msgid_plural "Template syntax check FAILED for %(count)d templates: %(names)s."
+msgstr[0] "Sprawdzenie składni szablonu NIE POWIODŁO SIĘ dla %(names)s."
+msgstr[1] ""
+"Sprawdzenie składni NIE POWIODŁO SIĘ dla %(count)d szablonów: %(names)s."
+msgstr[2] ""
+"Sprawdzenie składni NIE POWIODŁO SIĘ dla %(count)d szablonów: %(names)s."
+
+#, python-format
+msgid "Template syntax OK."
+msgid_plural "Template syntax OK for %(count)d templates."
+msgstr[0] "Składnia szablonu poprawna."
+msgstr[1] "Składnia poprawna dla %(count)d szablonów."
+msgstr[2] "Składnia poprawna dla %(count)d szablonów."
+
+msgid "Check template syntax"
+msgstr "Sprawdź składnię szablonu"
+
+msgid "sites"
+msgstr "witryny"
+
+msgid "Database templates"
+msgstr "Szablony w bazie danych"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "name"
+msgstr "nazwa"
+
+msgid "Example: 'flatpages/default.html'"
+msgstr "Przykład: 'flatpages/default.html'"
+
+msgid "content"
+msgstr "zawartość"
+
+msgid "creation date"
+msgstr "data utworzenia"
+
+msgid "last changed"
+msgstr "ostatnia zmiana"
+
+msgid "template"
+msgstr "szablon"
+
+msgid "templates"
+msgstr "szablony"

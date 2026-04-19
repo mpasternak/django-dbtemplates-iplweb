@@ -1,7 +1,0 @@
-[django-dbtemplates.main]
-file_filter = dbtemplates/locale/<lang>/LC_MESSAGES/django.po
-source_file = dbtemplates/locale/en/LC_MESSAGES/django.po
-source_lang = en
-
-[main]
-host = https://www.transifex.com
