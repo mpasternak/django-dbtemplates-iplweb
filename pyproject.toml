@@ -33,6 +33,8 @@ dynamic = ["version"]
 dev = [
     "coverage",
     "django",
+    "pytest",
+    "pytest-django",
 ]
 docs = [
     "django",
@@ -64,3 +66,7 @@ extend-exclude = ["dbtemplates/migrations"]
 [tool.ruff.lint]
 select = ["E", "F", "W"]
 ignore = ["E501", "E127", "E128", "E124"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "dbtemplates.test_settings"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
