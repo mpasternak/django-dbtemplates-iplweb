@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 name = "django-dbtemplates"
 authors = [{name = "Jannis Leidel", email = "jannis@leidel.info"}]
 description = "Template loader for templates stored in the database"
-readme = "README.rst"
+readme = "README.md"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
