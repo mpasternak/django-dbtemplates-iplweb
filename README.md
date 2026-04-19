@@ -10,6 +10,15 @@
 exposes them through a regular Django template loader — so templates can be
 edited from the admin instead of being redeployed as files.
 
+Originally developed by Jannis Leidel and
+[Jazzband](https://jazzband.co/projects/django-dbtemplates).
+This fork is actively maintained by [IPLweb](https://github.com/iplweb/).
+
+<p align="center">
+<b>Support graciously provided by</b><br><br>
+<a href="https://www.iplweb.pl"><img src="https://www.iplweb.pl/images/ipl-logo-large.png" alt="IPLweb" width="150"></a>
+</p>
+
 ## Why?
 
 Django's built-in template loaders read from the filesystem or app
