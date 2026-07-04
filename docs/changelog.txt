@@ -1,6 +1,19 @@
 Changelog
 =========
 
+v4.4 (2026-07-04)
+-----------------
+
+* Added the opt-in ``DBTEMPLATES_SKIP_UNKNOWN_NAMES`` setting. When enabled,
+  the loader keeps an in-process set of the template names that exist in the
+  database and skips the cache/DB lookup for any other name. This removes the
+  hundreds of redundant ``django_template`` queries (or cache round-trips) that
+  a Django-admin page otherwise triggers when only a few templates are stored
+  in the database. Companion setting ``DBTEMPLATES_KNOWN_NAMES_TTL`` bounds the
+  staleness window in multi-process deployments. Off by default; existing
+  behaviour is unchanged. See :ref:`Skipping unknown template names
+  <skip_unknown_names>`.
+
 v5.0 (unreleased)
 -----------------
 

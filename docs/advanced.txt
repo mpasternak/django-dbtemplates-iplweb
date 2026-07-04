@@ -35,6 +35,47 @@ Please see the `cache documentation`_ if you want to know more about it.
 
 .. _cache documentation: http://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
 
+.. _skip_unknown_names:
+
+Skipping unknown template names
+===============================
+
+.. versionadded:: 4.4
+
+The loader is consulted for **every** template name Django resolves. A single
+Django-admin page renders on the order of 150 ``admin/`` and ``grappelli/``
+partials, none of which are stored in the database — yet each one still costs a
+cache lookup and, on a miss, a ``SELECT ... FROM django_template`` query. With
+a no-op cache backend (``DummyCache``, common in development so template edits
+show up immediately) the negative results are never remembered, so those
+hundreds of queries are issued on *every* request.
+
+If your ``Template`` table only holds a handful of overrides you can enable an
+opt-in optimisation::
+
+    DBTEMPLATES_SKIP_UNKNOWN_NAMES = True
+
+The loader then keeps an in-process set of the names that actually exist in the
+table and answers "not here, try the next loader" for any other name — without
+touching the cache or the database. Names that *are* in the table go through
+the normal machinery, so per-site resolution, caching and overrides are
+unaffected.
+
+The set is loaded once per process and refreshed automatically whenever a
+``Template`` is saved or deleted. Because it lives in a single process, rows
+added by *other* processes (several web workers, or ``loaddata`` / raw SQL into
+a running process) are only picked up when that process reloads the set —
+serving processes reload it on restart, so a deploy always sees new templates.
+To bound the staleness window without a restart, set a time-to-live in
+seconds::
+
+    DBTEMPLATES_KNOWN_NAMES_TTL = 60
+
+.. note::
+    This is safe to leave off (the default). It is most valuable in
+    development and single-process deployments; in multi-process setups pair it
+    with ``DBTEMPLATES_KNOWN_NAMES_TTL`` or rely on restart-on-deploy.
+
 .. _versioned:
 
 Versioned storage

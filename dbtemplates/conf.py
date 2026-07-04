@@ -16,6 +16,13 @@ class DbTemplatesConf(AppConf):
     AUTO_POPULATE_CONTENT = True
     MEDIA_PREFIX = None
     CACHE_BACKEND = None
+    # Opt-in: skip cache/DB lookups for template names that are not stored in
+    # the database (see dbtemplates.utils.names). Off by default to preserve
+    # the historical behaviour.
+    SKIP_UNKNOWN_NAMES = False
+    # Optional staleness bound (seconds) for the in-process name set used by
+    # SKIP_UNKNOWN_NAMES. ``None`` = rely on save/delete signals + restarts.
+    KNOWN_NAMES_TTL = None
 
     def configure_media_prefix(self, value):
         if value is None:
@@ -33,35 +40,45 @@ class DbTemplatesConf(AppConf):
             else:
                 return "default"
         if isinstance(value, str) and value.startswith("dbtemplates."):
-            raise ImproperlyConfigured("Please upgrade to one of the "
-                                       "supported backends as defined "
-                                       "in the Django docs.")
+            raise ImproperlyConfigured(
+                "Please upgrade to one of the "
+                "supported backends as defined "
+                "in the Django docs."
+            )
         return value
 
     def configure_use_reversion(self, value):
-        if value and 'reversion' not in settings.INSTALLED_APPS:
-            raise ImproperlyConfigured("Please add 'reversion' to your "
-                                       "INSTALLED_APPS setting to make "
-                                       "use of it in dbtemplates.")
+        if value and "reversion" not in settings.INSTALLED_APPS:
+            raise ImproperlyConfigured(
+                "Please add 'reversion' to your "
+                "INSTALLED_APPS setting to make "
+                "use of it in dbtemplates."
+            )
         return value
 
     def configure_use_reversion_compare(self, value):
-        if value and 'reversion_compare' not in settings.INSTALLED_APPS:
-            raise ImproperlyConfigured("Please add 'reversion_compare' to your"
-                                       " INSTALLED_APPS setting to make "
-                                       "use of it in dbtemplates.")
+        if value and "reversion_compare" not in settings.INSTALLED_APPS:
+            raise ImproperlyConfigured(
+                "Please add 'reversion_compare' to your"
+                " INSTALLED_APPS setting to make "
+                "use of it in dbtemplates."
+            )
         return value
 
     def configure_use_tinymce(self, value):
-        if value and 'tinymce' not in settings.INSTALLED_APPS:
-            raise ImproperlyConfigured("Please add 'tinymce' to your "
-                                       "INSTALLED_APPS setting to make "
-                                       "use of it in dbtemplates.")
+        if value and "tinymce" not in settings.INSTALLED_APPS:
+            raise ImproperlyConfigured(
+                "Please add 'tinymce' to your "
+                "INSTALLED_APPS setting to make "
+                "use of it in dbtemplates."
+            )
         return value
 
     def configure_use_redactor(self, value):
-        if value and 'redactor' not in settings.INSTALLED_APPS:
-            raise ImproperlyConfigured("Please add 'redactor' to your "
-                                       "INSTALLED_APPS setting to make "
-                                       "use of it in dbtemplates.")
+        if value and "redactor" not in settings.INSTALLED_APPS:
+            raise ImproperlyConfigured(
+                "Please add 'redactor' to your "
+                "INSTALLED_APPS setting to make "
+                "use of it in dbtemplates."
+            )
         return value

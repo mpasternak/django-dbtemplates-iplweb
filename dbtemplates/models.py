@@ -3,6 +3,7 @@ from dbtemplates.utils.cache import (
     add_template_to_cache,
     remove_cached_template,
 )
+from dbtemplates.utils.names import invalidate_known_names
 from dbtemplates.utils.template import get_template_source
 
 from django.contrib.sites.managers import CurrentSiteManager
@@ -18,24 +19,26 @@ class Template(models.Model):
     Defines a template model for use with the database template loader.
     The field ``name`` is the equivalent to the filename of a static template.
     """
-    id = models.AutoField(primary_key=True, verbose_name=_('ID'),
-                          serialize=False, auto_created=True)
-    name = models.CharField(_('name'), max_length=100,
-                            help_text=_("Example: 'flatpages/default.html'"))
-    content = models.TextField(_('content'), blank=True)
-    sites = models.ManyToManyField(Site, verbose_name=_('sites'),
-                                   blank=True)
-    creation_date = models.DateTimeField(_('creation date'), auto_now_add=True)
-    last_changed = models.DateTimeField(_('last changed'), auto_now=True)
+
+    id = models.AutoField(
+        primary_key=True, verbose_name=_("ID"), serialize=False, auto_created=True
+    )
+    name = models.CharField(
+        _("name"), max_length=100, help_text=_("Example: 'flatpages/default.html'")
+    )
+    content = models.TextField(_("content"), blank=True)
+    sites = models.ManyToManyField(Site, verbose_name=_("sites"), blank=True)
+    creation_date = models.DateTimeField(_("creation date"), auto_now_add=True)
+    last_changed = models.DateTimeField(_("last changed"), auto_now=True)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager('sites')
+    on_site = CurrentSiteManager("sites")
 
     class Meta:
-        db_table = 'django_template'
-        verbose_name = _('template')
-        verbose_name_plural = _('templates')
-        ordering = ('name',)
+        db_table = "django_template"
+        verbose_name = _("template")
+        verbose_name_plural = _("templates")
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
@@ -78,3 +81,6 @@ def add_default_site(instance, **kwargs):
 signals.post_save.connect(add_default_site, sender=Template)
 signals.post_save.connect(add_template_to_cache, sender=Template)
 signals.pre_delete.connect(remove_cached_template, sender=Template)
+# Keep the DBTEMPLATES_SKIP_UNKNOWN_NAMES name set in sync with the table.
+signals.post_save.connect(invalidate_known_names, sender=Template)
+signals.post_delete.connect(invalidate_known_names, sender=Template)

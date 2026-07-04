@@ -22,6 +22,28 @@ To disable this feature set ``DBTEMPLATES_AUTO_POPULATE_CONTENT`` to
 The dotted Python path to the cache backend class. See
 :ref:`Caching <caching>` for details.
 
+``DBTEMPLATES_SKIP_UNKNOWN_NAMES``
+----------------------------------
+
+.. versionadded:: 4.4
+
+A boolean, ``False`` by default. When enabled, the loader keeps an in-process
+set of the template names that exist in the database and skips the cache/DB
+lookup entirely for any name that is not in it. This avoids hundreds of
+redundant lookups per request when only a few templates are overridden in the
+database. See :ref:`Skipping unknown template names <skip_unknown_names>`.
+
+``DBTEMPLATES_KNOWN_NAMES_TTL``
+-------------------------------
+
+.. versionadded:: 4.4
+
+Number of seconds (or ``None``, the default) after which the in-process name
+set used by ``DBTEMPLATES_SKIP_UNKNOWN_NAMES`` is reloaded from the database.
+Use it to bound how long a process may miss templates added by other
+processes. With ``None`` the set is refreshed only via save/delete signals and
+on process restart.
+
 ``DBTEMPLATES_USE_CODEMIRROR``
 ------------------------------
 
