@@ -95,16 +95,16 @@ def _parse_for(contents):
     # Drop a trailing ``reversed`` modifier (not modelled in v1).
     if seq_tokens[-1] == "reversed":
         seq_tokens = seq_tokens[:-1]
-    if len(seq_tokens) != 1:
-        return None
-    # Loop targets are comma-separated (``for k, v in ...``); strip commas.
-    targets = [t.strip(",") for t in " ".join(target_tokens).split(",")]
+    # Loop targets are comma-separated (``for k, v in ...``); joining on space
+    # then splitting on comma turns both ``k,v`` and ``k, v`` into clean names.
+    targets = [t.strip() for t in " ".join(target_tokens).split(",")]
     targets = [t for t in targets if t]
     if not targets or not all(_is_identifier(t) for t in targets):
         return None
-    seq = _split_var(seq_tokens[0])
-    if seq is None:
-        return None
+    # ``seq`` is the dotted path of the iterated sequence, or ``None`` when it
+    # cannot be modelled as a plain variable (literal, multi-token, filtered).
+    # We still return the targets so their accesses can be treated as opaque.
+    seq = _split_var(seq_tokens[0]) if len(seq_tokens) == 1 else None
     return targets, seq
 
 
@@ -128,9 +128,13 @@ class _Scope:
 
 def _flush_scope(scope):
     """Attach exactly 2 sample elements (deep copies) to the scope's list."""
-    if scope.opaque or not scope.element_shape:
-        # Bare loop variable (or opaque targets never recorded): elements are
-        # strings equal to the loop-variable name.
+    if scope.opaque:
+        # Opaque multi-target loop (``for k, v in ...``): the element shape is
+        # unknown, so use a readable string placeholder rather than ``null``.
+        sample = "_".join(sorted(scope.targets))
+    elif not scope.element_shape:
+        # Bare loop variable (``{{ item }}``): elements are strings equal to the
+        # loop-variable name.
         sample = scope.var
     else:
         sample = scope.element_shape
@@ -181,8 +185,19 @@ def _handle_block(contents, context, stack):
     if contents.startswith("for ") or contents == "for":
         parsed = _parse_for(contents)
         if parsed is None:
+            # Malformed ``for`` header: push an opaque throwaway scope so the
+            # matching ``endfor`` pops IT rather than unbalancing an enclosing
+            # loop.
+            stack.append(_Scope(None, (), [], True))
             return
         targets, seq = parsed
+        if seq is None:
+            # Targets parse but the sequence cannot be modelled (literal,
+            # filtered, multi-token): opaque scope that OWNS the targets, so
+            # their accesses are dropped instead of leaking to the top level.
+            # A throwaway list keeps its samples out of the context.
+            stack.append(_Scope(None, targets, [], True))
+            return
         # Register the seq as a list in the top-level context. Loop
         # registration wins over any stray scalar/attr access on the same name.
         seq_list = _register_seq_list(context, seq)

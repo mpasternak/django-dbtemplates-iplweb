@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 
@@ -77,6 +77,24 @@ class PreviewEndpointTests(TestCase):
         self.client.force_login(self.plain_user)
         self.assertNotEqual(self.client.post(self.detect_url).status_code, 200)
         self.assertNotEqual(self.client.post(self.render_url).status_code, 200)
+
+    def test_staff_without_change_permission_forbidden(self):
+        # A staff user gets past admin_view but fails has_change_permission,
+        # exercising the explicit 403 branch (not just a login redirect).
+        staff = User.objects.create_user(
+            "staff", "staff@example.com", "password", is_staff=True
+        )
+        self.client.force_login(staff)
+        self.assertEqual(self.client.post(self.detect_url).status_code, 403)
+        self.assertEqual(self.client.post(self.render_url).status_code, 403)
+
+    def test_post_without_csrf_token_rejected(self):
+        # These endpoints execute template logic under a staff session, so the
+        # admin_view CSRF guard must actually reject a tokenless cross-site POST.
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.superuser)
+        resp = csrf_client.post(self.render_url, {"content": "hi", "context": "{}"})
+        self.assertEqual(resp.status_code, 403)
 
 
 class PreviewChangeFormTests(TestCase):

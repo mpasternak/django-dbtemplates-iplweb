@@ -99,3 +99,25 @@ class BuildContextScaffoldTests(SimpleTestCase):
             build_context_scaffold("{% load unknown_lib %}{{ title }}"),
             {"title": "title"},
         )
+
+    def test_multitarget_for_with_space_is_opaque_list(self):
+        # ``for k, v`` (space after comma) must still register ``items`` as a
+        # list and treat the targets as opaque (their accesses dropped), not
+        # leak ``v`` into the top-level context.
+        self.assertEqual(
+            build_context_scaffold("{% for k, v in items %}{{ v.name }}{% endfor %}"),
+            {"items": ["k_v", "k_v"]},
+        )
+
+    def test_unparseable_inner_for_does_not_unbalance_outer_loop(self):
+        # The inner loop iterates a literal (unparseable seq); it must not flush
+        # the outer loop early or mis-attribute ``row.title``.
+        self.assertEqual(
+            build_context_scaffold(
+                "{% for row in rows %}"
+                "{% for x in 'abc' %}{{ x }}{% endfor %}"
+                "{{ row.title }}"
+                "{% endfor %}"
+            ),
+            {"rows": [{"title": "row.title"}, {"title": "row.title"}]},
+        )

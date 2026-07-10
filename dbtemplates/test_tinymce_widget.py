@@ -112,3 +112,27 @@ class ApplyTemplateTinyMCEConfigTests(SimpleTestCase):
         # toolbar:false is the deliberate opt-out; code must not resurrect it.
         result = apply_template_tinymce_config({"toolbar": "bold"})
         self.assertIs(result["toolbar"], False)
+
+
+class RealDjangoTinyMCEConfigTests(SimpleTestCase):
+    """Exercise the merge against django-tinymce's ACTUAL default config.
+
+    ``apply_template_tinymce_config`` runs on top of whatever
+    ``AdminTinyMCE.get_mce_config`` produces; this guards the load-bearing
+    integration (a django-tinymce default-config or API change) that the pure
+    unit tests above cannot catch.
+    """
+
+    def test_merge_over_real_admin_tinymce_default(self):
+        from tinymce.widgets import AdminTinyMCE
+
+        base = AdminTinyMCE().get_mce_config({"id": "id_content"})
+        result = apply_template_tinymce_config(base)
+
+        self.assertEqual(result["entity_encoding"], "raw")
+        self.assertFalse(result["verify_html"])
+        self.assertFalse(result["convert_urls"])
+        # code ends up in plugins exactly once (django-tinymce ships it already).
+        from dbtemplates.admin import _tokenize_tinymce_list
+
+        self.assertEqual(_tokenize_tinymce_list(result["plugins"]).count("code"), 1)
