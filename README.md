@@ -144,6 +144,66 @@ pip install "git+https://github.com/mpasternak/django-dbtemplates-iplweb.git"
 See <https://django-dbtemplates.readthedocs.io/> for the complete
 documentation.
 
+## WYSIWYG editor (TinyMCE) with source view
+
+dbtemplates can edit the `content` field with a template-aware
+[TinyMCE](https://github.com/jazzband/django-tinymce) widget.
+
+Enable it by installing the optional extra and turning on the setting:
+
+```bash
+pip install "django-dbtemplates-iplweb[tinymce]"
+```
+
+```python
+INSTALLED_APPS = [
+    # ...
+    "tinymce",
+    "dbtemplates",
+]
+
+DBTEMPLATES_USE_TINYMCE = True
+```
+
+What you get out of the box:
+
+- A **`code` toolbar button** that opens a modal showing the raw HTML source,
+  so you always have an escape hatch to view and edit the underlying markup.
+- **Django template tags are protected**: `{{ ... }}`, `{% ... %}` and
+  `{# ... #}` are shielded from TinyMCE's HTML cleaner (via
+  `entity_encoding='raw'`, `verify_html=False`, `convert_urls=False`, and a set
+  of `protect` regexes) so editing does not silently corrupt template syntax.
+
+Override or extend the config with `DBTEMPLATES_TINYMCE_CONFIG` (a dict), which
+is merged on top of dbtemplates' own defaults (and django-tinymce's
+`TINYMCE_DEFAULT_CONFIG`):
+
+```python
+DBTEMPLATES_TINYMCE_CONFIG = {
+    "height": 600,
+    "plugins": "link image lists",
+    "toolbar": "undo redo | bold italic | link image",
+}
+```
+
+The `code` source button is re-added **after** your config is applied, so your
+own `plugins`/`toolbar` cannot accidentally drop it.
+
+Caveats:
+
+- **Disabling the toolbar removes the source button.** Setting
+  `"toolbar": False` (or omitting the toolbar entirely) is treated as a
+  deliberate opt-out — dbtemplates will not resurrect a disabled toolbar, so the
+  `code` button is unavailable in that case.
+- **A project that calls `tinymce.overrideDefaults` itself will clobber the tag
+  protection.** dbtemplates injects the `protect` regexes via a static JS file
+  using `tinymce.overrideDefaults(...)`, which is last-call-wins. If your own
+  admin JS also calls `tinymce.overrideDefaults`, it will replace the protect
+  regexes and you must re-add them yourself.
+- TinyMCE and CodeMirror cannot be enabled at the same time
+  (`DBTEMPLATES_USE_CODEMIRROR` + `DBTEMPLATES_USE_TINYMCE` raises
+  `ImproperlyConfigured`).
+
 ## Links
 
 - Documentation: <https://django-dbtemplates.readthedocs.io/>

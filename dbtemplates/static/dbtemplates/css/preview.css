@@ -1,0 +1,41 @@
+.dbtemplates-preview {
+  margin: 1em 0;
+  padding: 0;
+}
+
+.dbtemplates-preview > summary {
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: bold;
+}
+
+.dbtemplates-preview-body {
+  padding: 12px;
+}
+
+.dbtemplates-preview-body textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+
+.dbtemplates-preview-actions {
+  margin: 8px 0;
+}
+
+.dbtemplates-preview-error {
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #ba2121;
+  background: #fef0f0;
+  color: #ba2121;
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+
+.dbtemplates-preview-result {
+  width: 100%;
+  min-height: 300px;
+  border: 1px solid #ccc;
+  background: #fff;
+}

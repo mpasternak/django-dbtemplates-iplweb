@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.auth',
+    'tinymce',
     'dbtemplates',
 ]
 
@@ -49,3 +50,9 @@ TEMPLATES = [
         }
     },
 ]
+
+ROOT_URLCONF = 'dbtemplates.test_urls'
+
+STATIC_URL = '/static/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
