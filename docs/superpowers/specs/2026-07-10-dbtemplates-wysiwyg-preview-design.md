@@ -14,7 +14,8 @@ in two phases behind a single coherent design:
   plugin (a toolbar button that opens a modal with the raw source) and protects
   Django template tags (`{% %}`, `{{ }}`, `{# #}`) from being mangled by the
   HTML cleaner.
-- **Feature B — PREVIEW:** a collapsed "Podgląd" panel on the change form that
+- **Feature B — PREVIEW:** a collapsed preview panel (label `_("Preview")`;
+  Polish "Podgląd" via the locale catalog) on the change form that
   lets an editor (1) auto-detect a best-effort context scaffold from the
   template source, (2) edit that context as JSON, and (3) render the template
   with that context, showing the result in an isolated iframe next to the
@@ -72,11 +73,11 @@ whichever widget is active (TinyMCE or a plain textarea).
 Django admin change form (TemplateAdmin)
 ├─ content field
 │   └─ widget: SourceAwareAdminTinyMCE  (Feature A)  — code plugin + tag protection
-└─ "Podgląd" panel (Feature B, collapsed)
+└─ Preview panel (Feature B, collapsed; labels via gettext)
     ├─ context <textarea> (JSON)
-    ├─ [Wykryj] button ─────► POST admin: preview-detect/  ─► build_context_scaffold()
-    ├─ [Renderuj] button ───► POST admin: preview-render/   ─► engines['django'].from_string().render()
-    └─ result <iframe srcdoc>
+    ├─ [Detect] button ─────► POST admin: preview-detect/  ─► build_context_scaffold()
+    ├─ [Render] button ─────► POST admin: preview-render/   ─► engines['django'].from_string().render()
+    └─ result <iframe srcdoc sandbox="allow-scripts">
 ```
 
 New/changed files:
@@ -84,6 +85,9 @@ New/changed files:
 - `dbtemplates/admin.py` — new widget subclass (A); custom admin URLs and views,
   `change_form_template`, and `Media` for the preview panel (B).
 - `dbtemplates/conf.py` — new `DBTEMPLATES_TINYMCE_CONFIG` setting (A).
+- `pyproject.toml` — add an optional extra `tinymce` pinning a minimum
+  `django-tinymce` version (see Dependency floor below); the base package keeps
+  no hard tinymce dependency.
 - `dbtemplates/utils/introspect.py` — new module, `build_context_scaffold()` (B).
 - `dbtemplates/templates/admin/dbtemplates/template/change_form.html` — override
   adding the preview panel (B).
@@ -111,9 +115,16 @@ subclass **overrides `get_mce_config()`**:
 1. call `super().get_mce_config(...)` → the config already merged by
    django-tinymce (its `DEFAULT_CONFIG` + any project `mce_attrs`);
 2. apply dbtemplates' template-aware overrides (below);
-3. append the `code` plugin/button (see normalization rule);
-4. finally apply the new `DBTEMPLATES_TINYMCE_CONFIG` setting (a dict) on top,
-   so the project always has the last word.
+3. apply the new `DBTEMPLATES_TINYMCE_CONFIG` setting (a dict) on top, so the
+   project controls styling/plugins/toolbar;
+4. **last**, run the `code` plugin/button normalization (see rule below).
+
+Ordering rationale: the `code` append runs **after** `DBTEMPLATES_TINYMCE_CONFIG`
+so that a project setting its own `plugins`/`toolbar` in that setting cannot
+accidentally drop the shipped source-view button. The deliberate opt-out is
+`toolbar: false` (or an absent toolbar), which the normalization rule leaves
+untouched. Thus: source view is guaranteed unless the project explicitly
+disables the toolbar.
 
 The JSON-serializable keys flow through this merged config. `protect` is handled
 separately (see wrinkle below) because it cannot be JSON-serialized.
@@ -149,17 +160,33 @@ each:
 config to JSON (`json.dumps(..., cls=DjangoJSONEncoder)` into `data-mce-conf`,
 `JSON.parse`d by `init_tinymce.js`), so regexes cannot pass through `mce_attrs`.
 Note also that `protect` is applied in a `BeforeSetContent` handler, so it must
-be registered **before** the editor's initial `setContent` — an
-`init_instance_callback` fires too late, and django-tinymce's `init_tinymce.js`
-only string→function-resolves a fixed `fns` allowlist that excludes it.
+be registered **before** the editor's initial `setContent`. Passing it through a
+per-editor `setup` string would fire early enough but is clobber-prone (a
+project's own `setup` would replace it); an `init_instance_callback` fires too
+late. Either way, a `RegExp` array is not JSON-serializable, so it cannot ride
+`mce_attrs` at all.
 
 Resolution: a static JS file (`tinymce_django_protect.js`) added to the widget's
 `Media` **after** django-tinymce's own JS, calling
 `tinymce.overrideDefaults({ protect: [/\{\{[\s\S]*?\}\}/g, /\{%[\s\S]*?%\}/g,
-/\{#[\s\S]*?#\}/g] })`. `overrideDefaults` sets global init defaults before any
-editor initializes (confirmed present in the bundled TinyMCE 7.8), sidestepping
-both the JSON and init-order problems. The `Media` ordering must place this file
-after `tinymce.min.js`/django-tinymce assets.
+/\{#[\s\S]*?#\}/g] })`. `overrideDefaults` shallow-merges global init defaults
+before any editor initializes (per-editor `init` still wins per key, and our
+merged config never sets `protect`), sidestepping both the JSON and init-order
+problems. Two ordering caveats to document: (a) the `Media` entry must load
+after `tinymce.min.js`/django-tinymce assets; (b) `overrideDefaults` is
+last-call-wins — a host project that calls `tinymce.overrideDefaults` in its own
+admin JS would wipe these regexes, so the README notes it.
+
+### Dependency floor
+
+The design leans on two django-tinymce facts: the internal `get_mce_config()`
+override point (present since django-tinymce 3.4.0) and a bundled TinyMCE that
+ships `overrideDefaults`/`protect`/`convert_urls` (TinyMCE 7.x). Phase 1 pins a
+minimum `django-tinymce` version in a new optional extra
+(`pip install django-dbtemplates[tinymce]`) and documents it in the README.
+`configure_use_tinymce` continues to only check `INSTALLED_APPS`; the version
+floor is expressed through packaging, not a runtime assertion, to avoid coupling
+import-time behaviour to a private API.
 
 ### Backward compatibility
 
@@ -222,6 +249,16 @@ Algorithm:
   dropped rather than mis-attributed). Documented, not worked around.
 - Sample values are fixed constants (no randomness), so output is fully
   deterministic and unit-testable.
+- **Bare loop variable** (`{{ item }}` with no attribute access) → list elements
+  are strings equal to the loop-variable name (not empty dicts).
+- **`forloop.*`** (`forloop.counter`, `forloop.first`, …) is a Django-provided
+  loop helper, not user context: it is explicitly ignored (no top-level
+  `forloop` key emitted).
+- **Unterminated `{% for %}`** (missing `{% endfor %}`): flush open scopes at
+  end-of-input, attaching whatever element shape was collected.
+- **List-vs-dict collision** (`{% for x in things %}` and `{{ things.count }}`):
+  the loop registration wins — `things` stays a list; a stray attribute access on
+  the same name is dropped (documented, not merged).
 
 Scope boundaries for v1 (per decision 5): no filter-based type inference, no
 `{% with %}` handling, no `{% include %}` variable resolution, no attempt to
@@ -264,7 +301,8 @@ Notes:
 
 - `TemplateAdmin.change_form_template` points at
   `admin/dbtemplates/template/change_form.html`, which extends the default admin
-  change form and injects a collapsed "Podgląd" panel below the content field.
+  change form and injects a collapsed preview panel (`_("Preview")`) below the
+  content field.
 - The panel contains: a JSON `<textarea>` for the context, a "Detect" and a
   "Render" button, and an `<iframe srcdoc sandbox="allow-scripts">` for the
   rendered output. The `sandbox` attribute (with `allow-scripts` but **without**
@@ -277,8 +315,9 @@ Notes:
 - `preview.js` (added via the admin `Media`) wires the buttons:
   - reads the current editor content from TinyMCE
     (`tinymce.get(<id>).getContent()`) when active, else from the textarea;
-  - sends the `X-CSRFToken` header (read from the admin CSRF cookie) on every
-    POST;
+  - sends the `X-CSRFToken` header on every POST, reading the token from the
+    change form's hidden `csrfmiddlewaretoken` input (robust under
+    `CSRF_COOKIE_HTTPONLY` / `CSRF_USE_SESSIONS`, unlike a cookie read);
   - "Detect" POSTs `content` to `preview-detect/` and fills the JSON textarea;
   - "Render" POSTs `content` + `context` to `preview-render/` and sets the
     iframe `srcdoc` to the returned HTML, or shows the returned error.
@@ -309,14 +348,23 @@ Notes:
   - for-loop `{% for item in items %}{{ item.title }}{% endfor %}` → `items` is a
     list of exactly 2 dicts each with a `title` key;
   - scalar/dict collision (`{{ user }}` + `{{ user.name }}`) → dict wins;
+  - bare loop var `{% for x in xs %}{{ x }}{% endfor %}` → list of 2 strings;
+  - `{{ forloop.counter }}` produces no top-level `forloop` key;
+  - unterminated `{% for %}` (no `endfor`) flushes without raising;
+  - list-vs-dict collision keeps `things` a list;
   - a template with `{% load unknown %}` does not raise and still yields the
     other variables.
 - **Integration — endpoints:**
   - `preview-render/` returns rendered HTML for a valid template + context;
-  - `preview-render/` returns a graceful `error` (not a 500 traceback) for an
-    unknown tag / invalid context JSON;
+  - `preview-render/` returns a graceful `error` with HTTP 400 (not a 500
+    traceback) for an unknown tag / invalid context JSON;
   - `preview-detect/` returns a JSON scaffold for posted content;
-  - both endpoints reject non-staff / missing-permission requests.
+  - GET (non-POST) returns 405;
+  - both endpoints reject non-staff / missing-permission requests (403);
+  - a POST without a valid CSRF token is rejected (403).
+- **Change form:**
+  - the rendered add/change form's preview iframe carries
+    `sandbox="allow-scripts"` (and not `allow-same-origin`).
 - **Widget config:**
   - the effective TinyMCE config includes `code` in `plugins` and `toolbar`
     (verified for both string and list forms of those keys);
@@ -325,9 +373,11 @@ Notes:
   - `entity_encoding`, `verify_html`, `convert_urls` are set as specified;
   - `DBTEMPLATES_TINYMCE_CONFIG` overrides merge on top of the defaults (has the
     last word).
-- **Tag survival (render round-trip):** a template with `{% url %}`/`{{ var }}`
-  inside an `href` attribute keeps its Django syntax intact through the widget's
-  config (documents the `convert_urls: false` + `protect` intent).
+- **Tag protection (config assertion):** the effective config sets
+  `convert_urls: false`; the `protect` regexes cannot be asserted server-side
+  (they live in the JS `overrideDefaults` file), so actual survival of
+  `{% url %}`/`{{ var }}` inside `href` is a documented manual/browser check, not
+  an automated test.
 
 ## Phasing
 
