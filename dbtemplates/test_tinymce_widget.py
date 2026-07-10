@@ -4,9 +4,15 @@ These exercise the pure, unit-testable ``apply_template_tinymce_config``
 function directly, so they do not require an active TinyMCE widget.
 """
 
+import os
+import subprocess
+import sys
+
 from django.test import SimpleTestCase, override_settings
 
 from dbtemplates.admin import apply_template_tinymce_config
+
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class ApplyTemplateTinyMCEConfigTests(SimpleTestCase):
@@ -136,3 +142,33 @@ class RealDjangoTinyMCEConfigTests(SimpleTestCase):
         from dbtemplates.admin import _tokenize_tinymce_list
 
         self.assertEqual(_tokenize_tinymce_list(result["plugins"]).count("code"), 1)
+
+
+class SourceAwareWidgetBranchTests(SimpleTestCase):
+    """Exercise the whole ``DBTEMPLATES_USE_TINYMCE`` branch out-of-process.
+
+    ``admin.py`` selects the editor widget at import time, so the
+    ``SourceAwareAdminTinyMCE`` class, its ``get_mce_config`` override, and the
+    ``protect`` JS Media ordering cannot be reached with the default settings.
+    A subprocess with ``DBTEMPLATES_USE_TINYMCE=True`` loads and checks it (an
+    in-process reload would re-run ``admin.site.register`` and raise
+    ``AlreadyRegistered``).
+    """
+
+    def test_tinymce_branch_loads_and_configures_code(self):
+        env = dict(os.environ)
+        env["DJANGO_SETTINGS_MODULE"] = "dbtemplates.test_settings_tinymce"
+        env["PYTHONPATH"] = REPO_ROOT + os.pathsep + env.get("PYTHONPATH", "")
+        result = subprocess.run(
+            [sys.executable, os.path.join("dbtemplates", "_tinymce_widget_check.py")],
+            cwd=REPO_ROOT,
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            result.returncode,
+            0,
+            msg=f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}",
+        )
+        self.assertIn("OK", result.stdout)
