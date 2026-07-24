@@ -44,6 +44,7 @@ docs = [
 ]
 
 [project.urls]
+Funding = "https://buymeacoffee.com/mpasternak"
 Documentation = "https://django-dbtemplates.readthedocs.io/"
 Changelog = "https://django-dbtemplates.readthedocs.io/en/latest/changelog.html"
 Source = "https://github.com/mpasternak/django-dbtemplates-iplweb"
