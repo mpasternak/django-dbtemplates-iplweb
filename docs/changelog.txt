@@ -27,6 +27,8 @@ v5.0 (unreleased)
 
 * Django 5.x support
 
+* Added support for Django 6.0 and 6.1 (both require Python 3.12 or newer).
+
 v4.0 (2022-09-3)
 -----------------
 
