@@ -28,12 +28,18 @@ assert config["convert_urls"] is False, config.get("convert_urls")
 
 # The protect snippet must be present AND loaded after TinyMCE's own core JS,
 # so ``tinymce.overrideDefaults`` runs against a defined ``tinymce`` global.
-js = [str(item) for item in widget.media._js]
+# ``render_js()`` yields rendered ``<script>`` tags on every supported Django;
+# ``Media._js`` holds bare path strings up to 5.2 but ``Script`` objects from
+# 6.0 on, so match on substrings rather than on whole list items.
+js = [str(tag) for tag in widget.media.render_js()]
 protect = "dbtemplates/js/tinymce_django_protect.js"
-assert protect in js, f"protect JS missing from media: {js}"
-core_indices = [i for i, src in enumerate(js) if "tinymce" in src and src != protect]
+protect_indices = [i for i, tag in enumerate(js) if protect in tag]
+assert protect_indices, f"protect JS missing from media: {js}"
+core_indices = [
+    i for i, tag in enumerate(js) if "tinymce" in tag and protect not in tag
+]
 assert core_indices, f"no TinyMCE core JS found in media: {js}"
-assert js.index(protect) > min(core_indices), (
+assert min(protect_indices) > min(core_indices), (
     f"protect JS must load after TinyMCE core: {js}"
 )
 
