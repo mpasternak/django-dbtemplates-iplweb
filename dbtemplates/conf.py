@@ -11,6 +11,12 @@ class DbTemplatesConf(AppConf):
     USE_REVERSION = False
     USE_REVERSION_COMPARE = False
     USE_TINYMCE = False
+    # Extra TinyMCE config (a dict) merged on top of dbtemplates' own
+    # template-aware defaults when USE_TINYMCE is enabled. Lets a project
+    # control styling/plugins/toolbar; the shipped ``code`` source-view button
+    # is re-added last so this setting cannot accidentally drop it (unless the
+    # project deliberately disables the toolbar entirely).
+    TINYMCE_CONFIG = {}
     USE_REDACTOR = False
     ADD_DEFAULT_SITE = True
     AUTO_POPULATE_CONTENT = True

@@ -37,9 +37,13 @@ dependencies = ["django-appconf >= 0.4"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
+tinymce = [
+    "django-tinymce>=3.4.0",
+]
 dev = [
     "coverage",
     "django",
+    "django-tinymce",
     "pytest",
     "pytest-django",
 ]

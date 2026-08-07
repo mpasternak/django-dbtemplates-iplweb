@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-dbtemplates-iplweb\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-19 16:01-0500\n"
+"POT-Creation-Date: 2026-07-10 02:53-0500\n"
 "PO-Revision-Date: 2026-04-19 16:01-0500\n"
 "Last-Translator: Michał Pasternak <michal.dtz@gmail.com>\n"
 "Language-Team: Polish\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
+#: admin.py:155
 msgid ""
 "Leaving this empty causes Django to look for a template with the given name "
 "and populate this field with its content."
@@ -24,12 +25,19 @@ msgstr ""
 "Pozostawienie tego pola pustym spowoduje, że Django wyszuka szablon o "
 "podanej nazwie i wypełni to pole jego zawartością."
 
+#: admin.py:225
 msgid "Advanced"
 msgstr "Zaawansowane"
 
+#: admin.py:228
 msgid "Date/time"
 msgstr "Data/czas"
 
+#: admin.py:284
+msgid "Context must be a JSON object."
+msgstr "Kontekst musi być obiektem JSON."
+
+#: admin.py:295
 #, python-format
 msgid "Cache of one template successfully invalidated."
 msgid_plural "Cache of %(count)d templates successfully invalidated."
@@ -37,9 +45,11 @@ msgstr[0] "Pomyślnie unieważniono pamięć podręczną jednego szablonu."
 msgstr[1] "Pomyślnie unieważniono pamięć podręczną %(count)d szablonów."
 msgstr[2] "Pomyślnie unieważniono pamięć podręczną %(count)d szablonów."
 
+#: admin.py:299
 msgid "Invalidate cache of selected templates"
 msgstr "Unieważnij pamięć podręczną wybranych szablonów"
 
+#: admin.py:307
 #, python-format
 msgid "Cache successfully repopulated with one template."
 msgid_plural "Cache successfully repopulated with %(count)d templates."
@@ -47,9 +57,11 @@ msgstr[0] "Pomyślnie odtworzono pamięć podręczną z jednym szablonem."
 msgstr[1] "Pomyślnie odtworzono pamięć podręczną z %(count)d szablonami."
 msgstr[2] "Pomyślnie odtworzono pamięć podręczną z %(count)d szablonami."
 
+#: admin.py:311
 msgid "Repopulate cache with selected templates"
 msgstr "Odtwórz pamięć podręczną z wybranych szablonów"
 
+#: admin.py:323
 #, python-format
 msgid "Template syntax check FAILED for %(names)s."
 msgid_plural "Template syntax check FAILED for %(count)d templates: %(names)s."
@@ -59,6 +71,7 @@ msgstr[1] ""
 msgstr[2] ""
 "Sprawdzenie składni NIE POWIODŁO SIĘ dla %(count)d szablonów: %(names)s."
 
+#: admin.py:332
 #, python-format
 msgid "Template syntax OK."
 msgid_plural "Template syntax OK for %(count)d templates."
@@ -66,35 +79,72 @@ msgstr[0] "Składnia szablonu poprawna."
 msgstr[1] "Składnia poprawna dla %(count)d szablonów."
 msgstr[2] "Składnia poprawna dla %(count)d szablonów."
 
+#: admin.py:335
 msgid "Check template syntax"
 msgstr "Sprawdź składnię szablonu"
 
+#: admin.py:339 models.py:30
 msgid "sites"
 msgstr "witryny"
 
+#: apps.py:7
 msgid "Database templates"
 msgstr "Szablony w bazie danych"
 
+#: models.py:24
 msgid "ID"
 msgstr "ID"
 
+#: models.py:27
 msgid "name"
 msgstr "nazwa"
 
+#: models.py:27
 msgid "Example: 'flatpages/default.html'"
 msgstr "Przykład: 'flatpages/default.html'"
 
+#: models.py:29
 msgid "content"
 msgstr "zawartość"
 
+#: models.py:31
 msgid "creation date"
 msgstr "data utworzenia"
 
+#: models.py:32
 msgid "last changed"
 msgstr "ostatnia zmiana"
 
+#: models.py:39
 msgid "template"
 msgstr "szablon"
 
+#: models.py:40
 msgid "templates"
 msgstr "szablony"
+
+#: templates/admin/dbtemplates/template/change_form.html:11
+msgid "Preview"
+msgstr "Podgląd"
+
+#: templates/admin/dbtemplates/template/change_form.html:14
+msgid ""
+"Paste or auto-detect a context (JSON), then render the template with it."
+msgstr ""
+"Wklej lub wykryj kontekst (JSON), a następnie wyrenderuj z nim szablon."
+
+#: templates/admin/dbtemplates/template/change_form.html:16
+msgid "Context (JSON)"
+msgstr "Kontekst (JSON)"
+
+#: templates/admin/dbtemplates/template/change_form.html:20
+msgid "Detect"
+msgstr "Wykryj"
+
+#: templates/admin/dbtemplates/template/change_form.html:23
+msgid "Render"
+msgstr "Renderuj"
+
+#: templates/admin/dbtemplates/template/change_form.html:29
+msgid "Rendered preview"
+msgstr "Wyrenderowany podgląd"

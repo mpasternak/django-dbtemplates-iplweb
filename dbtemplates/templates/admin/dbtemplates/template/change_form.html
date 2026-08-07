@@ -1,0 +1,33 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block after_field_sets %}
+{{ block.super }}
+<details class="dbtemplates-preview module"
+         id="dbtemplates-preview"
+         data-detect-url="{% url 'admin:dbtemplates_template_preview_detect' %}"
+         data-render-url="{% url 'admin:dbtemplates_template_preview_render' %}"
+         data-content-field="id_content">
+  <summary>{% trans "Preview" %}</summary>
+  <div class="dbtemplates-preview-body">
+    <p class="help">
+      {% trans "Paste or auto-detect a context (JSON), then render the template with it." %}
+    </p>
+    <label for="dbtemplates-preview-context">{% trans "Context (JSON)" %}</label>
+    <textarea id="dbtemplates-preview-context" rows="8" spellcheck="false"></textarea>
+    <p class="dbtemplates-preview-actions">
+      <button type="button" class="button" id="dbtemplates-preview-detect">
+        {% trans "Detect" %}
+      </button>
+      <button type="button" class="button default" id="dbtemplates-preview-render">
+        {% trans "Render" %}
+      </button>
+    </p>
+    <div class="dbtemplates-preview-error" id="dbtemplates-preview-error" hidden></div>
+    <iframe id="dbtemplates-preview-result"
+            class="dbtemplates-preview-result"
+            title="{% trans 'Rendered preview' %}"
+            sandbox="allow-scripts"></iframe>
+  </div>
+</details>
+{% endblock %}
