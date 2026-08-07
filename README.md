@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/django-dbtemplates-iplweb.svg)](https://pypi.org/project/django-dbtemplates-iplweb/)
 [![Tests](https://github.com/mpasternak/django-dbtemplates-iplweb/actions/workflows/test.yml/badge.svg)](https://github.com/mpasternak/django-dbtemplates-iplweb/actions/workflows/test.yml)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/)
-[![Django Version](https://img.shields.io/badge/django-4.2%20%7C%205.0%20%7C%205.1%20%7C%205.2-092e20.svg)](https://www.djangoproject.com/)
+[![Django Version](https://img.shields.io/badge/django-4.2%20%7C%205.2%20%7C%206.0%20%7C%206.1-092e20.svg)](https://www.djangoproject.com/)
 [![License](https://img.shields.io/badge/license-BSD-green.svg)](LICENSE)
 [![Documentation](https://readthedocs.org/projects/django-dbtemplates/badge/)](https://django-dbtemplates.readthedocs.io/)
 
@@ -56,14 +56,13 @@ edit them via the admin and changes take effect immediately.
 
 | Django \ Python | 3.10 | 3.11 | 3.12 | 3.13 |
 |-----------------|:----:|:----:|:----:|:----:|
-| 4.2 LTS         | ✓    | ✓    | ✓    | ✓    |
-| 5.0             | ✓    | ✓    | ✓    | ✗    |
-| 5.1             | ✓    | ✓    | ✓    | ✓    |
-| 5.2             | ✓    | ✓    | ✓    | ✓    |
+| 4.2 LTS         | ✓    | ✓    | ✓    | ✗    |
+| 5.2 LTS         | ✓    | ✓    | ✓    | ✓    |
+| 6.0             | ✗    | ✗    | ✓    | ✓    |
+| 6.1             | ✗    | ✗    | ✓    | ✓    |
 
 Matrix derived from `tox.ini` and Django's own Python support matrix.
-`djmain` (Django's unreleased `main` branch) is tested against Python
-3.12 / 3.13.
+Django 6.0 and 6.1 require Python 3.12 or newer.
 
 ## Installation
 
